@@ -16,17 +16,18 @@ func Start() {
 
 	flag.Parse()
 
-	if *base64 == "encode" && len(os.Args) > 3 {
+	switch {
+	case *base64 == "encode" && len(os.Args) > 3:
 		result = tools.Base64Encode(os.Args[3])
-	} else if *base64 == "decode" && len(os.Args) > 3 {
+	case *base64 == "decode" && len(os.Args) > 3:
 		result = tools.Base64Decode(os.Args[3])
-	} else if *uuid == true {
+	case *uuid == true:
 		result = tools.NewUuid()
-	} else if *json == "beautify" && len(os.Args) > 3 {
+	case *json == "beautify" && len(os.Args) > 3:
 		result = tools.JSONBeautify(os.Args[3])
-	} else if *json == "minify" && len(os.Args) > 3 {
+	case *json == "minify" && len(os.Args) > 3:
 		result = tools.JSONMinify(os.Args[3])
-	} else {
+	default:
 		flag.PrintDefaults()
 	}
 
