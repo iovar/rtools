@@ -8,6 +8,7 @@
 *.so
 *.dylib
 *.wasm
+wasm_exec.js
 rtools
 
 # Test binary, built with `go test -c`

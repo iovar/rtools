@@ -2,6 +2,7 @@ CLI_BINARY_NAME=rtools
 WASM_BINARY_NAME=rtools.wasm
 CLI_MAIN_PATH=./cmd/cli/main.go
 WASM_MAIN_PATH=./cmd/wasm/main.go
+WEB_PATH=./res/web
 
 # --- Build ----
 .PHONY: build
@@ -13,7 +14,13 @@ build-cli:
 
 .PHONY: build-wasm
 build-wasm:
-	GOOS=js GOARCH=wasm go build -o $(WASM_BINARY_NAME) $(WASM_MAIN_PATH)
+	GOOS=js GOARCH=wasm go build -o $(WEB_PATH)/$(WASM_BINARY_NAME) $(WASM_MAIN_PATH)
+
+# --- Setup ---
+.PHONY: copy-wasm
+copy-wasm:
+	cp $$(go env GOROOT)/lib/wasm/wasm_exec.js $(WEB_PATH)/wasm_exec.js
+	chmod +w $(WEB_PATH)/wasm_exec.js
 
 # --- Run ----
 .PHONY: run
