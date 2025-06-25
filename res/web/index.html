@@ -3,21 +3,75 @@
 <head>
     <meta charset="utf-8">
     <title>Rtools</title>
+    <style>
+        form {
+            margin: 1rem 4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+    </style>
 </head>
 <body>
+    <section>
+        <form onsubmit="callWasm(event)">
+            <label for="utility">
+                Utility:
+            </label>
+            <select name="utility">
+                <option value="base64Encode">Encode base64</option>
+                <option value="base64Decode">Decode base64</option>
+                <option value="jsonBeautify">Beautify JSON</option>
+                <option value="jsonMinify">Minify JSON</option>
+                <option value="generateUuid">Generate UUID</option>
+            </select>
+            <label for="text">
+                Text:
+            </label>
+            <textarea rows="16" name="text"></textarea>
+            <input type="submit" value="Submit" />
+        </form>
+    </section>
     <script src="wasm_exec.js"></script>
     <script type="module">
             const go = new Go();
-            window.rtoolsWasmExports = {
-                add: (x, y) => {
-                    return x + y
-                }
-            }
+            window.rtoolsWasmExports = {}
 
             const result = await WebAssembly.instantiateStreaming(fetch("rtools.wasm"), go.importObject);
             go.run(result.instance);
 
-            console.log('uuid', window.generateUuid());
+            window.callWasm = function(e) {
+                e.preventDefault();
+                const form = e.srcElement;
+                const textarea = form.elements.text;
+                const select = form.elements.utility;
+
+                textarea.value = rtoolsWasmExports[select.value](textarea.value);
+
+                // text loses newlines, need to somehow format before and after, or simply EncodeURICompoent
+                window.location.search = `?utility=${select.value}&text=${textarea.value ?? ''}`;
+                return false
+            }
+    </script>
+    <script>
+            const utilities = [
+                'base64Encode',
+                'base64Decode',
+                'jsonBeautify',
+                'jsonMinify',
+                'generateUuid',
+                'getQrCode',
+            ];
+            const p = new URLSearchParams(window.location.search);
+            const utility = p.get('utility');
+            const text = p.get('text');
+            if (utilities.includes(utility)) {
+                document.querySelector('form select[name="utility"]').value = utility;
+            }
+            if (text) {
+                document.querySelector('form textarea[name="text"]').value = text;
+            }
     </script>
 </body>
 </html>

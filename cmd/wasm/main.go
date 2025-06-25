@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"syscall/js"
 
-	"github.com/iovar/rtools/pkg/tools"
+	"github.com/iovar/rtools/pkg/wasm"
 )
 
 /*
@@ -25,39 +24,7 @@ Not done
 func main() {
 	fmt.Println("Go WASM initialized")
 
-	fmt.Printf("Go %d\n", callAdd(2, 3))
-
-	js.Global().Set("generateUuid", js.FuncOf(generateUuid))
-	js.Global().Set("base64Encode", js.FuncOf(base64Encode))
-	js.Global().Set("base64Decode", js.FuncOf(base64Decode))
+	wasm.Setup()
 
 	select {} // Keeps the program running
-}
-
-func callAdd(x, y int) int {
-	addFn := js.Global().Get("rtoolsWasmExports").Get("add")
-	result := addFn.Invoke(x, y)
-	return result.Int()
-}
-
-func generateUuid(_ js.Value, _ []js.Value) any {
-	return js.ValueOf(tools.NewUuid())
-}
-
-func base64Encode(_ js.Value, args []js.Value) any {
-	if len(args) != 1 {
-		return "Invalid number of arguments"
-	}
-
-	input := args[0].String()
-	return tools.Base64Encode(input)
-}
-
-func base64Decode(_ js.Value, args []js.Value) any {
-	if len(args) != 1 {
-		return "Invalid number of arguments"
-	}
-
-	input := args[0].String()
-	return tools.Base64Decode(input)
 }
