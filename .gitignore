@@ -7,10 +7,8 @@
 *.dll
 *.so
 *.dylib
-*.wasm
-*.gz
-wasm_exec.js
 rtools
+dist
 
 # Test binary, built with `go test -c`
 *.test

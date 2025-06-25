@@ -3,6 +3,7 @@ WASM_BINARY_NAME=rtools.wasm
 CLI_MAIN_PATH=./cmd/cli/main.go
 WASM_MAIN_PATH=./cmd/wasm/main.go
 WEB_PATH=./res/web
+DIST_PATH=./dist
 
 # --- Build ----
 .PHONY: build
@@ -13,14 +14,25 @@ build-cli:
 	go build -o $(CLI_BINARY_NAME) $(CLI_MAIN_PATH)
 
 .PHONY: build-wasm
-build-wasm:
-	GOOS=js GOARCH=wasm go build -o $(WEB_PATH)/$(WASM_BINARY_NAME) $(WASM_MAIN_PATH)
+build-wasm: setup
+	GOOS=js GOARCH=wasm go build -o $(DIST_PATH)/$(WASM_BINARY_NAME) $(WASM_MAIN_PATH)
 
 # --- Setup ---
-.PHONY: copy-wasm
-copy-wasm:
-	cp $$(go env GOROOT)/lib/wasm/wasm_exec.js $(WEB_PATH)/wasm_exec.js
-	chmod +w $(WEB_PATH)/wasm_exec.js
+.PHONY: setup
+setup:
+	mkdir -p $(DIST_PATH)
+	cp $(WEB_PATH)/index.html $(DIST_PATH)/index.html
+	cp $$(go env GOROOT)/lib/wasm/wasm_exec.js $(DIST_PATH)/wasm_exec.js
+	chmod +w $(DIST_PATH)/wasm_exec.js
+
+.PHONY: compress-wasm
+compress-wasm:
+	gzip -9 --keep -f $(DIST_PATH)/$(WASM_BINARY_NAME)
+	gzip -9 --keep -f $(DIST_PATH)/wasm_exec.js
+
+# --- Dist ---
+.PHONY: dist
+dist: build-wasm compress-wasm
 
 # --- Run ----
 .PHONY: run
@@ -44,7 +56,7 @@ clean-cli:
 
 .PHONY: clean-wasm
 clean-wasm:
-	rm -f $(WASM_BINARY_NAME)
+	rm -rf $(DIST_PATH)
 
 # --- Test ---
 .PHONY: test
