@@ -14,12 +14,11 @@ Done
 4. Serve a simple html, which simply calls e.g. uuid
 
 Not done
-2. Expose the main tools function for uuid first
-3. add a simple server started in wasm/main.go
-5. add different routes for the different routes, and create some links header
-6. replace the header with something injected from the wasm module
-7. start on the html wasm, read the route, spit the write html
-8. Connect all tools, with forms, etc
+3. add a simple server started in wasm/server.go and add make command for it
+4. move js functions to wasm ones, if possible
+5. move html template to wasm & inject
+6. add styles & beautify (as html/template)
+7. replace the header with rtools:[toolname] injected from the wasm module
 */
 func main() {
 	fmt.Println("Go WASM initialized")

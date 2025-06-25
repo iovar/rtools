@@ -8,6 +8,7 @@
 *.so
 *.dylib
 *.wasm
+*.gz
 wasm_exec.js
 rtools
 

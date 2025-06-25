@@ -11,6 +11,13 @@
             gap: 8px;
         }
 
+        img {
+            max-width: 256px;
+        }
+        img:not([src]), img[src=""] {
+            display: none;
+        }
+
     </style>
 </head>
 <body>
@@ -25,11 +32,13 @@
                 <option value="jsonBeautify">Beautify JSON</option>
                 <option value="jsonMinify">Minify JSON</option>
                 <option value="generateUuid">Generate UUID</option>
+                <option value="getQrCode">Generate QR Code</option>
             </select>
             <label for="text">
                 Text:
             </label>
             <textarea rows="16" name="text"></textarea>
+            <img class="qrCode" src="" alt="QR Code" />
             <input type="submit" value="Submit" />
         </form>
     </section>
@@ -46,11 +55,22 @@
                 const form = e.srcElement;
                 const textarea = form.elements.text;
                 const select = form.elements.utility;
+                const img = form.querySelector('img.qrCode');
+
+                img.src = '';
+                if (select.value === 'getQrCode') {
+                    const bytes = rtoolsWasmExports[select.value](textarea.value);
+                    const blob = new Blob([bytes], { type: "image/png" });
+                    const url = URL.createObjectURL(blob);
+
+console.log(url);
+                    img.src = url;
+                    return false;
+                }
 
                 textarea.value = rtoolsWasmExports[select.value](textarea.value);
 
-                // text loses newlines, need to somehow format before and after, or simply EncodeURICompoent
-                window.location.search = `?utility=${select.value}&text=${textarea.value ?? ''}`;
+                window.location.search = `?utility=${select.value}&text=${textarea.value ? encodeURICompoent(textarea.value) : ''}`;
                 return false
             }
     </script>
@@ -70,7 +90,8 @@
                 document.querySelector('form select[name="utility"]').value = utility;
             }
             if (text) {
-                document.querySelector('form textarea[name="text"]').value = text;
+                let value = utility === 'getQrCode' ? '' : text;
+                document.querySelector('form textarea[name="text"]').value = decodeURIComponent(value);
             }
     </script>
 </body>

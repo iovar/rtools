@@ -45,3 +45,20 @@ func NewQRCode(q QRCodeWriterInterface, url string, customFilename string) strin
 
 	return filename
 }
+
+func NewQRCodeBlob(url string) []byte {
+	defer func() {
+		if er := recover(); er != nil {
+			fmt.Printf("Recovered after following error: %v\n", er)
+		}
+	}()
+
+	img, err := qrcode.Encode(url, qrcode.Medium, QR_SIZE)
+
+	fmt.Printf("URL %v %v %v\n", url, err, len(img))
+	if err != nil {
+		panic(err)
+	}
+
+	return img
+}

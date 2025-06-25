@@ -7,7 +7,7 @@ import (
 )
 
 func generateUuid(_ js.Value, _ []js.Value) any {
-	return js.ValueOf(tools.NewUuid())
+	return tools.NewUuid()
 }
 
 func base64Encode(_ js.Value, args []js.Value) any {
@@ -44,4 +44,18 @@ func jsonMinify(_ js.Value, args []js.Value) any {
 
 	input := args[0].String()
 	return tools.JSONMinify(input)
+}
+
+func getQrCode(_ js.Value, args []js.Value) any {
+	if len(args) != 1 {
+		return "Invalid number of arguments"
+	}
+
+	input := args[0].String()
+
+	result := tools.NewQRCodeBlob(input)
+	bytes := js.Global().Get("Uint8Array").New(len(result))
+	js.CopyBytesToJS(bytes, result)
+
+	return bytes
 }

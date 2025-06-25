@@ -13,4 +13,5 @@ func Setup() {
 	wasmExports.Set("base64Decode", js.FuncOf(base64Decode))
 	wasmExports.Set("jsonBeautify", js.FuncOf(jsonBeautify))
 	wasmExports.Set("jsonMinify", js.FuncOf(jsonMinify))
+	wasmExports.Set("getQrCode", js.FuncOf(getQrCode))
 }
