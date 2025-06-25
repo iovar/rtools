@@ -34,6 +34,11 @@ compress-wasm:
 .PHONY: dist
 dist: build-wasm compress-wasm
 
+.PHONY: dist-release
+dist-release: dist
+	rm -rf ./docs/*
+	cp -r $(DIST_PATH)/* ./docs/
+
 # --- Run ----
 .PHONY: run
 run: run-cli

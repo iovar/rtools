@@ -70,7 +70,7 @@ console.log(url);
 
                 textarea.value = rtoolsWasmExports[select.value](textarea.value);
 
-                window.location.search = `?utility=${select.value}&text=${textarea.value ? encodeURIComponent(textarea.value) : ''}`;
+                window.location.search = `?utility=${select.value}&text=${textarea.value ? encodeURICompoent(textarea.value) : ''}`;
                 return false
             }
     </script>
