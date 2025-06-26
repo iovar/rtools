@@ -1,6 +1,7 @@
 CLI_BINARY_NAME=rtools
 WASM_BINARY_NAME=rtools.wasm
 CLI_MAIN_PATH=./cmd/cli/main.go
+SERVER_MAIN_PATH=./cmd/server/main.go
 WASM_MAIN_PATH=./cmd/wasm/main.go
 WEB_PATH=./res/web
 DIST_PATH=./dist
@@ -47,9 +48,9 @@ run: run-cli
 run-cli:
 	go run $(CLI_MAIN_PATH) $(ARGS)
 
-.PHONY: run-wasm
-run-wasm: build-wasm
-    # TODO - implement a way to run the wasm binary
+.PHONY: run-server
+run-server: dist
+	go run $(SERVER_MAIN_PATH) 
 
 # --- Clean ---
 .PHONY: clean

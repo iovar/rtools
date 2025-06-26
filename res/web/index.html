@@ -50,6 +50,7 @@
             const result = await WebAssembly.instantiateStreaming(fetch("rtools.wasm"), go.importObject);
             go.run(result.instance);
 
+            // Move to wasm and just call render here
             window.callWasm = function(e) {
                 e.preventDefault();
                 const form = e.srcElement;
@@ -75,6 +76,7 @@ console.log(url);
             }
     </script>
     <script>
+            // Move to wasm and call after render
             const utilities = [
                 'base64Encode',
                 'base64Decode',
