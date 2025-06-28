@@ -1,6 +1,7 @@
 package wasm
 
 import (
+	"fmt"
 	"syscall/js"
 
 	"github.com/iovar/rtools/pkg/tools"
@@ -58,4 +59,51 @@ func getQrCode(_ js.Value, args []js.Value) any {
 	js.CopyBytesToJS(bytes, result)
 
 	return bytes
+}
+
+func callWasm(_ js.Value, args []js.Value) any {
+	event := args[0]
+	event.Call("preventDefault")
+
+	form := event.Get("srcElement")
+
+	textArea := form.Get("elements").Get("text")
+	textValue := textArea.Get("value")
+
+	selectEl := form.Get("elements").Get("utility")
+	selValue := selectEl.Get("value")
+
+	img := form.Call("querySelector", "img.qrCode")
+
+	rtoolsWasmExports := js.Global().Get("rtoolsWasmExports")
+	img.Set("src", "")
+	if selValue.String() == "getQrCode" {
+		createObjectURL := js.Global().Get("URL").Get("createObjectURL")
+
+		obj := js.Global().Get("Object").New()
+		obj.Set("type", "image/png")
+		bytes := rtoolsWasmExports.Get(selValue.String()).Invoke(textValue)
+		arr := js.Global().Get("Array").New(3)
+		arr.SetIndex(0, bytes)
+		blob := js.Global().Get("Blob").New(arr, obj)
+		url := createObjectURL.Invoke(blob)
+
+		js.Global().Get("console").Get("log").Invoke(url)
+		img.Set("src", url)
+		return false
+	}
+
+	js.Global().Get("console").Get("log").Invoke("TIMG")
+	newValue := rtoolsWasmExports.Get(selValue.String()).Invoke(textValue)
+	textArea.Set("value", newValue)
+
+	tEncVal := ""
+
+	if textValue.Type() != js.TypeNull && textValue.Type() != js.TypeUndefined {
+		tEncVal = js.Global().Get("encodeURIComponent").Invoke(newValue).String()
+	}
+
+	newSearch := fmt.Sprintf("?utility=%s&text=%s", selValue, tEncVal)
+	js.Global().Get("location").Set("search", newSearch)
+	return false
 }
