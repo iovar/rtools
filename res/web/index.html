@@ -49,6 +49,7 @@
 
             const result = await WebAssembly.instantiateStreaming(fetch("rtools.wasm"), go.importObject);
             go.run(result.instance);
+            window.rtoolsWasmExports.loadFromUrl();
     </script>
     <script>
             // Move to wasm and call after render

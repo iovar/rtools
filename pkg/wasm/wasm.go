@@ -4,8 +4,6 @@ import (
 	"syscall/js"
 )
 
-// wrap functions
-// start sets all the functions on the go rtoolsWasmExports object
 func Setup() {
 	wasmExports := js.Global().Get("rtoolsWasmExports")
 	wasmExports.Set("generateUuid", js.FuncOf(generateUuid))
@@ -16,4 +14,5 @@ func Setup() {
 	wasmExports.Set("getQrCode", js.FuncOf(getQrCode))
 
 	wasmExports.Set("callWasm", js.FuncOf(callWasm))
+	wasmExports.Set("loadFromUrl", js.FuncOf(loadFromUrl))
 }

@@ -88,12 +88,10 @@ func callWasm(_ js.Value, args []js.Value) any {
 		blob := js.Global().Get("Blob").New(arr, obj)
 		url := createObjectURL.Invoke(blob)
 
-		js.Global().Get("console").Get("log").Invoke(url)
 		img.Set("src", url)
 		return false
 	}
 
-	js.Global().Get("console").Get("log").Invoke("TIMG")
 	newValue := rtoolsWasmExports.Get(selValue.String()).Invoke(textValue)
 	textArea.Set("value", newValue)
 
@@ -106,4 +104,23 @@ func callWasm(_ js.Value, args []js.Value) any {
 	newSearch := fmt.Sprintf("?utility=%s&text=%s", selValue, tEncVal)
 	js.Global().Get("location").Set("search", newSearch)
 	return false
+}
+
+func loadFromUrl(_ js.Value, _ []js.Value) any {
+	utilities := []string{
+		"base64Encode",
+		"base64Decode",
+		"jsonBeautify",
+		"jsonMinify",
+		"generateUuid",
+		"getQrCode",
+	}
+	search := js.Global().Get("location").Get("search")
+	params := js.Global().Get("URLSearchParams").New(search)
+
+	utility := params.Call("get", "utility")
+	text := params.Call("get", "text")
+
+	fmt.Printf("stuf: %s,  %s, %v\n", utility, text, utilities)
+	return nil
 }
