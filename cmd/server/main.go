@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 )
 
 const DIR = "./dist"
@@ -21,6 +22,10 @@ func serveStaticAssets(w http.ResponseWriter, req *http.Request) {
 
 	if path == "/" {
 		path = "/index.html"
+	}
+
+	if strings.HasSuffix(path, ".css") {
+		w.Header().Add("content-type", "text/css; charset=utf-8")
 	}
 
 	fullpath := getFullPath(path)

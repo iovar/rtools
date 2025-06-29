@@ -22,7 +22,8 @@ build-wasm: setup
 .PHONY: setup
 setup:
 	mkdir -p $(DIST_PATH)
-	cp $(WEB_PATH)/index.html $(DIST_PATH)/index.html
+	cp $(WEB_PATH)/*.html $(DIST_PATH)/
+	cp $(WEB_PATH)/*.css $(DIST_PATH)/
 	cp $$(go env GOROOT)/lib/wasm/wasm_exec.js $(DIST_PATH)/wasm_exec.js
 	chmod +w $(DIST_PATH)/wasm_exec.js
 

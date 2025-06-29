@@ -3,22 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Rtools</title>
-    <style>
-        form {
-            margin: 1rem 4rem;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        img {
-            max-width: 256px;
-        }
-        img:not([src]), img[src=""] {
-            display: none;
-        }
-
-    </style>
+    <link rel="stylesheet" href="main.css">
 </head>
 <body>
     <section>
@@ -50,27 +35,6 @@
             const result = await WebAssembly.instantiateStreaming(fetch("rtools.wasm"), go.importObject);
             go.run(result.instance);
             window.rtoolsWasmExports.loadFromUrl();
-    </script>
-    <script>
-            // Move to wasm and call after render
-            const utilities = [
-                'base64Encode',
-                'base64Decode',
-                'jsonBeautify',
-                'jsonMinify',
-                'generateUuid',
-                'getQrCode',
-            ];
-            const p = new URLSearchParams(window.location.search);
-            const utility = p.get('utility');
-            const text = p.get('text');
-            if (utilities.includes(utility)) {
-                document.querySelector('form select[name="utility"]').value = utility;
-            }
-            if (text) {
-                let value = utility === 'getQrCode' ? '' : text;
-                document.querySelector('form textarea[name="text"]').value = decodeURIComponent(value);
-            }
     </script>
 </body>
 </html>

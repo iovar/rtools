@@ -1,0 +1,14 @@
+form {
+    margin: 1rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+img {
+    max-width: 256px;
+}
+img:not([src]), img[src=""] {
+    display: none;
+}
+

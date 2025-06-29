@@ -1,7 +1,7 @@
 package wasm
 
 import (
-	"fmt"
+	"slices"
 	"syscall/js"
 
 	"github.com/iovar/rtools/pkg/tools"
@@ -77,6 +77,8 @@ func callWasm(_ js.Value, args []js.Value) any {
 
 	rtoolsWasmExports := js.Global().Get("rtoolsWasmExports")
 	img.Set("src", "")
+	newValue := textValue
+
 	if selValue.String() == "getQrCode" {
 		createObjectURL := js.Global().Get("URL").Get("createObjectURL")
 
@@ -89,11 +91,10 @@ func callWasm(_ js.Value, args []js.Value) any {
 		url := createObjectURL.Invoke(blob)
 
 		img.Set("src", url)
-		return false
+	} else {
+		newValue = rtoolsWasmExports.Get(selValue.String()).Invoke(textValue)
+		textArea.Set("value", newValue)
 	}
-
-	newValue := rtoolsWasmExports.Get(selValue.String()).Invoke(textValue)
-	textArea.Set("value", newValue)
 
 	tEncVal := ""
 
@@ -101,8 +102,11 @@ func callWasm(_ js.Value, args []js.Value) any {
 		tEncVal = js.Global().Get("encodeURIComponent").Invoke(newValue).String()
 	}
 
-	newSearch := fmt.Sprintf("?utility=%s&text=%s", selValue, tEncVal)
-	js.Global().Get("location").Set("search", newSearch)
+	url := js.Global().Get("URL").New(js.Global().Get("location").Get("href"))
+	url.Get("searchParams").Call("set", "utility", selValue)
+	url.Get("searchParams").Call("set", "text", tEncVal)
+
+	js.Global().Get("history").Call("pushState", nil, "", url.Call("toString"))
 	return false
 }
 
@@ -121,6 +125,27 @@ func loadFromUrl(_ js.Value, _ []js.Value) any {
 	utility := params.Call("get", "utility")
 	text := params.Call("get", "text")
 
-	fmt.Printf("stuf: %s,  %s, %v\n", utility, text, utilities)
+	if slices.Contains(utilities, utility.String()) {
+		el := js.Global().Get("document").Call(
+			"querySelector",
+			"form select[name=\"utility\"]",
+		)
+
+		if el.Type() != js.TypeUndefined {
+			el.Set("value", utility)
+		}
+	}
+
+	if text.Type() != js.TypeNull && text.Type() != js.TypeUndefined {
+		el := js.Global().Get("document").Call(
+			"querySelector",
+			"form textarea[name=\"text\"]",
+		)
+		tDecVal := js.Global().Get("decodeURIComponent").Invoke(text).String()
+
+		if el.Type() != js.TypeUndefined && el.Type() != js.TypeNull {
+			el.Set("value", tDecVal)
+		}
+	}
 	return nil
 }
